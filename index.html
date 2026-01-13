@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>LINKEY のペルソナ再考</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+  <style type="text/css">
+
+
+html {
+background-color: #fdf6ec; 
+min-height: 100%;
+padding: 20px 0; 
+}
+
+body {
+font-family: Roboto, "Noto Sans JP", Helvetica, Arial, sans-serif;
+color: #202124;
+line-height: 1.6;
+font-size: 14px;
+
+max-width: 720px;
+margin: 0 auto; 
+
+background-color: #ffffff;
+padding: 3em 2.5em; 
+border-radius: 8px; 
+box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1); 
+}
+
+h1, h2, h3, h4, h5, h6 {
+font-weight: 600;
+margin-top: 1.4em;
+margin-bottom: 0.6em;
+color: #b6743a;
+}
+h1 {
+font-size: 1.6em;
+border-bottom: 2px solid #f1c59a;
+padding-bottom: 0.3em;
+color: #d68b4c;
+}
+
+header#title-block-header {
+
+position: sticky;
+top: 0;
+z-index: 1000; 
+
+margin-top: -3em;
+margin-left: -2.5em;
+margin-right: -2.5em;
+
+padding: 2em 2.5em 1em 2.5em; 
+background-color: #ffffff;
+
+border-radius: 8px 8px 0 0;
+
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+margin-bottom: 2em;
+
+cursor: pointer;
+text-align: center;
+transition: opacity 0.3s;
+}
+
+header#title-block-header:hover {
+opacity: 0.95;
+}
+
+h1.title {
+background: none;
+box-shadow: none;
+text-shadow: none;
+border-radius: 0;
+border: none;
+color: #d68b4c;
+width: 100%;
+display: block;
+padding: 0.5em 0;
+margin: 0; font-weight: 700;
+font-size: 1.8em;
+letter-spacing: 0.05em;
+border-bottom: 2px solid #f8e6cf;
+}
+h1.title .toggle-icon {
+display: none !important;
+}
+h2 {
+font-size: 1.35em;
+border-bottom: 1px solid #f1c59a;
+padding-bottom: 0.2em;
+color: #c27b3b;
+cursor: pointer;
+position: relative;
+}
+h3 {
+font-size: 1.2em;
+color: #b6743a;
+
+border-left: 5px solid #d68b4c; 
+padding-left: 10px;
+
+margin-left: 0; }
+h4 {
+
+font-weight: 700; 
+font-size: 1.12em; 
+letter-spacing: 0.03em; 
+color: #b6743a; 
+
+padding-left: 0;
+margin-left: 0;
+
+margin-top: 1.5em;
+margin-bottom: 0.5em;
+}
+h5 {
+
+font-size: 1.05em;
+
+color: #c79a6d;
+
+font-weight: 700;
+
+margin-top: 1.2em;
+margin-bottom: 0.4em;
+
+line-height: 1.4;
+
+letter-spacing: 0.02em;
+}
+
+p {
+margin: 0.8em 0; line-height: 1.7; }
+
+
+
+strong {
+font-weight: 600;
+color: #b6743a;
+}
+em {
+color: #d68b4c;
+}
+
+ul, ol {
+margin: 0.6em 0 0.6em 1.2em; 
+
+padding-left: 1.2em; 
+}
+li {
+margin: 0.25em 0;
+position: relative;
+line-height: 1.5;
+}
+li, li p {
+font-weight: 500 !important;
+}
+
+ul li::marker, ol li::marker {
+color: #d68b4c; 
+font-weight: 700; 
+}
+
+blockquote {
+margin: 1em 0;
+padding: 0.8em 1.2em;
+background: #fff7ee;
+border-left: 4px solid #d68b4c;
+color: #3b2b1a;
+font-style: italic;
+}
+
+code {
+font-family: "Roboto Mono", monospace;
+background: #fff7ee;
+padding: 2px 4px;
+border-radius: 4px;
+font-size: 0.9em;
+color: #b6743a;
+}
+
+pre {
+background: #fff7ee;
+border: 1px solid #f1c59a;
+border-radius: 6px;
+padding: 0.8em 1em;
+overflow-x: auto;
+}
+
+hr {
+border: none;
+border-top: 2px solid #f1c59a;
+margin: 1.5em 0;
+}
+
+table {
+border-collapse: collapse;
+width: 100%;
+margin: 1em 0;
+font-size: 14px;
+}
+th, td {
+border: 1px solid #f1c59a;
+text-align: left;
+padding: 6px 10px;
+}
+th {
+background: #f8e6cf;
+color: #2b1a0e;
+font-weight: 600;
+}
+tr:nth-child(even) td {
+background: #fff7ee;
+}
+
+a {
+color: #b6743a;
+text-decoration: none;
+border-bottom: 1px dotted #d68b4c;
+}
+a:hover {
+color: #d68b4c;
+border-bottom: 1px solid #d68b4c;
+}
+
+img {
+max-width: 80%;
+height: auto;
+display: block;
+margin: 1em auto;
+}
+.delta {
+font-weight: 600;
+}
+.delta.positive {
+color: #3c9d61 !important; 
+}
+.delta.negative {
+color: #c04b42 !important; 
+}
+.delta:not(.positive):not(.negative) {
+color: #999;
+}
+
+
+.accordion-wrapper {
+display: grid;
+grid-template-rows: 1fr;
+transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out;
+opacity: 1;
+}
+
+.accordion-wrapper.collapsed {
+grid-template-rows: 0fr;
+opacity: 0;
+}
+
+.accordion-inner {
+overflow: hidden;
+}
+
+.toggle-icon {
+transform: rotate(0deg);
+}
+h1.closed .toggle-icon,
+h2.closed .toggle-icon {
+transform: rotate(-90deg);
+}
+
+h1.closed, h2.closed {
+margin-bottom: 0; 
+border-bottom-color: transparent; 
+transition: border-bottom-color 0.3s;
+}
+
+
+.toggle-icon {
+user-select: none;
+-webkit-user-select: none; 
+}
+
+#title-block-header {
+user-select: none;
+-webkit-user-select: none; 
+}
+
+h1, h2 {
+user-select: text;
+-webkit-user-select: text;
+}
+
+@media screen and (min-width: 1300px) {
+
+
+#TOC {
+position: fixed; 
+top: 0;
+left: 0;
+width: 340px; 
+height: 100vh; 
+overflow-y: auto; 
+padding: 2em; 
+background-color: #fdf6ec; 
+border-right: 1px solid #f1c59a; 
+box-sizing: border-box;
+z-index: 900;
+}
+
+
+body {
+margin-left: 380px !important; 
+margin-right: auto !important;
+max-width: 800px !important; 
+}
+
+
+header#title-block-header {
+width: calc(100% + 5em);
+
+box-sizing: border-box; } 
+#TOC ul {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+#TOC a {
+text-decoration: none;
+border: none;
+display: block;
+border-radius: 4px;
+transition: all 0.2s ease;
+line-height: 1.4;
+position: relative;
+}
+
+#TOC a:hover {
+background-color: #fff7ee;
+color: #d68b4c !important;
+}
+
+#TOC a.active {
+background-color: #ffeccf;
+font-weight: 700 !important;
+color: #b6743a !important;
+border-left: 4px solid #d68b4c; 
+padding-left: 8px !important; 
+}
+
+#TOC > ul > li {
+margin-top: 1.5em; 
+padding-bottom: 0.2em;
+border-bottom: 1px solid #f8e6cf; 
+margin-bottom: 0.5em;
+}
+#TOC > ul > li > a {
+font-size: 1.05em; 
+font-weight: 700; 
+color: #b6743a; 
+padding: 4px 8px;
+}
+
+#TOC > ul > li > ul {
+margin-top: 0.2em;
+}
+#TOC > ul > li > ul > li {
+margin-top: 0.4em;
+padding-left: 0.5em; 
+}
+#TOC > ul > li > ul > li > a {
+font-size: 0.95em;
+font-weight: 500; 
+color: #d68b4c; 
+padding: 3px 8px 3px 12px; 
+border-left: 2px solid transparent; 
+}
+
+#TOC > ul > li > ul > li > a:hover {
+border-left-color: #f1c59a;
+}
+
+#TOC ul ul ul {
+margin-top: 0.2em;
+padding-left: 10px; 
+border-left: 1px solid #eee; 
+margin-left: 8px;
+}
+#TOC ul ul ul li {
+margin-top: 0.2em;
+}
+#TOC ul ul ul li a {
+font-size: 0.85em; 
+font-weight: 400; 
+color: #888; 
+padding: 2px 8px;
+}
+
+#TOC ul ul ul li a:hover {
+color: #d68b4c !important;
+}
+} 
+
+
+.copy-icon {
+font-size: 0.8em;
+margin-left: 0.5em;
+cursor: pointer;
+opacity: 0;
+transition: opacity 0.2s, transform 0.1s;
+color: #b6743a;
+user-select: none;
+}
+
+h1:hover .copy-icon,
+h2:hover .copy-icon,
+h3:hover .copy-icon {
+opacity: 0.6;
+}
+.copy-icon:hover {
+opacity: 1 !important;
+transform: scale(1.2);
+}
+
+#copy-toast {
+visibility: hidden; 
+min-width: 250px;
+background-color: #333;
+color: #fff;
+text-align: center;
+border-radius: 4px;
+padding: 12px;
+
+position: fixed;
+z-index: 2147483647; 
+right: 30px;
+bottom: 30px;
+font-size: 14px;
+opacity: 0;
+transition: opacity 0.5s, bottom 0.5s;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+#copy-toast.show {
+visibility: visible;
+opacity: 1;
+bottom: 50px; 
+}
+
+#breadcrumb {
+font-size: 0.85em;
+color: #888;
+margin-top: 0.5em;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+font-family: "Roboto", sans-serif;
+
+opacity: 0;
+transform: translateY(-5px);
+transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#breadcrumb.visible {
+opacity: 1;
+transform: translateY(0);
+}
+#breadcrumb span {
+cursor: pointer;
+transition: color 0.2s;
+}
+#breadcrumb span:hover {
+color: #d68b4c; 
+text-decoration: underline;
+}
+#breadcrumb .separator {
+margin: 0 0.5em;
+color: #ccc;
+font-size: 0.8em;
+}
+
+.header-controls {
+position: absolute;
+right: 20px;
+top: 50%;
+transform: translateY(-50%); 
+display: flex;
+gap: 8px;
+z-index: 1001; 
+}
+.control-btn {
+font-family: Roboto, sans-serif;
+font-size: 0.75em;
+font-weight: 600;
+padding: 4px 10px;
+border: 1px solid #d68b4c; 
+border-radius: 4px;
+color: #d68b4c;
+background-color: #ffffff;
+cursor: pointer;
+transition: all 0.2s ease;
+user-select: none;
+}
+.control-btn:hover {
+background-color: #d68b4c;
+color: #ffffff;
+box-shadow: 0 2px 5px rgba(214, 139, 76, 0.3);
+}
+
+@media screen and (max-width: 600px) {
+.header-controls {
+position: static; 
+justify-content: center;
+margin-top: 10px;
+transform: none;
+}
+}
+
+#link-preview-pane {
+display: block; 
+position: fixed;
+width: 400px;
+min-height: 100px;
+background-color: #ffffff;
+border: 1px solid #f1c59a;
+border-radius: 8px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+padding: 15px;
+z-index: 2000;
+opacity: 0;
+transform: translateY(10px);
+transition: opacity 0.3s, transform 0.3s;
+
+overflow: hidden; 
+pointer-events: none;
+}
+#link-preview-pane.visible {
+opacity: 1;
+transform: translateY(0);
+}
+
+.preview-title {
+font-weight: 700;
+color: #d68b4c;
+margin-bottom: 0.2em;
+font-size: 0.95em;
+line-height: 1.4;
+
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.preview-url {
+font-size: 0.75em;
+color: #999;
+word-break: break-all;
+margin-bottom: 10px;
+display: block;
+
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 100%;
+}
+
+
+
+.preview-frame-wrapper {
+width: 100%; 
+height: 250px; 
+overflow: hidden; 
+border: 1px solid #eee;
+border-radius: 4px;
+background-color: #f9f9f9;
+margin-top: 10px;
+}
+
+.preview-frame {
+
+width: 1280px;
+
+height: 960px; 
+transform: scale(0.29);
+transform-origin: top left;
+border: none;
+pointer-events: none; 
+background-color: #ffffff; 
+}
+</style>
+  <script>// mod-sticky-header.js
+// 責務: ヘッダークリック時のトップへ戻る動作
+document.addEventListener("DOMContentLoaded", function() {
+  const header = document.getElementById('title-block-header');
+  if (header) {
+    header.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 補足: ユーザーに機能が伝わるよう、タイトル属性を追加
+    header.setAttribute('title', 'Click to scroll to top');
+  }
+});
+</script>
+  <script>// ui-toast.js
+// 責務: トースト通知の生成と表示
+(function() {
+  const createToast = () => {
+    // 既に存在すれば作らない
+    if (document.getElementById("copy-toast")) return document.getElementById("copy-toast");
+    const toast = document.createElement("div");
+    toast.id = "copy-toast";
+    toast.textContent = "通知";
+    document.body.appendChild(toast);
+    return toast;
+  };
+
+  // グローバルに公開
+  window.showToast = (message) => {
+    const toastElement = createToast();
+    toastElement.textContent = message;
+    toastElement.className = "show";
+    setTimeout(() => { 
+      toastElement.className = toastElement.className.replace("show", ""); 
+    }, 3000);
+  };
+})();
+</script>
+  <script>// mod-copy.js
+// 責務: クリップボードへのコピー処理とボタン生成
+(function() {
+  const copySection = (header, wrapper) => {
+    const wasClosed = header.classList.contains('closed');
+    if (wasClosed) wrapper.classList.remove('collapsed');
+
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.setStartBefore(header); 
+    range.setEndAfter(wrapper);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    try {
+      document.execCommand('copy');
+      if (window.showToast) window.showToast("📋 クリップボードにコピーしました");
+    } catch (err) {
+      console.error('Copy failed', err);
+      if (window.showToast) window.showToast("❌ コピーに失敗しました");
+    }
+
+    selection.removeAllRanges();
+    if (wasClosed) wrapper.classList.add('collapsed');
+  };
+
+  // グローバル公開: アコーディオン生成時に使う
+  window.addCopyButton = (header, wrapper) => {
+    const copyBtn = document.createElement('span');
+    copyBtn.className = 'copy-icon';
+    copyBtn.textContent = '📋';
+    copyBtn.title = 'このセクションをコピー';
+    copyBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); 
+      copySection(header, wrapper);
+    });
+    header.appendChild(copyBtn);
+  };
+})();
+</script>
+  <script>// mod-accordion.js
+// 責務: Hタグの構造化、開閉アニメーション、アイコン付与
+(function() {
+  const addToggleIcon = (header) => {
+    if (!header.querySelector('.toggle-icon')) {
+      const icon = document.createElement('span');
+      icon.className = 'toggle-icon';
+      icon.style.marginRight = '8px';
+      icon.style.display = 'inline-block';
+      icon.style.transition = 'transform 0.3s ease';
+      icon.textContent = '▼';
+      header.insertBefore(icon, header.firstChild);
+    }
+  };
+
+  // グローバル公開: メイン処理から呼ぶ
+  window.wrapSection = (level) => {
+    const headers = document.querySelectorAll(`h${level}`);
+    headers.forEach(header => {
+      if (header.nextElementSibling && header.nextElementSibling.classList.contains('accordion-wrapper')) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'accordion-wrapper';
+      const inner = document.createElement('div');
+      inner.className = 'accordion-inner';
+      wrapper.appendChild(inner);
+
+      let next = header.nextElementSibling;
+      while (next) {
+        if (next.tagName.match(/^H[1-6]$/)) {
+          const nextLevel = parseInt(next.tagName.substring(1));
+          if (nextLevel <= level) break;
+        }
+        const target = next;
+        next = next.nextElementSibling; 
+        inner.appendChild(target);      
+      }
+
+      header.insertAdjacentElement('afterend', wrapper);
+      header.style.cursor = 'pointer';
+      
+      addToggleIcon(header);
+      
+      // コピーボタン追加 (mod-copy.jsの機能を利用)
+      if (window.addCopyButton) window.addCopyButton(header, wrapper);
+
+      header.addEventListener('click', () => {
+        const isClosed = header.classList.contains('closed');
+        if (isClosed) {
+          header.classList.remove('closed');
+          wrapper.classList.remove('collapsed');
+        } else {
+          header.classList.add('closed');
+          wrapper.classList.add('collapsed');
+        }
+      });
+
+      // ▼▼▼ 修正: デフォルトで閉じる処理を削除しました ▼▼▼
+      // header.classList.add('closed');
+      // wrapper.classList.add('collapsed');
+      // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    });
+  };
+  
+  // TOC連携用の再帰オープン関数
+  window.openRecursive = (targetElement) => {
+    if (targetElement.classList.contains('closed')) {
+      targetElement.classList.remove('closed');
+      const next = targetElement.nextElementSibling;
+      if (next && next.classList.contains('accordion-wrapper')) {
+        next.classList.remove('collapsed');
+      }
+    }
+    let parent = targetElement.parentElement;
+    while (parent && parent !== document.body) {
+      if (parent.classList.contains('accordion-wrapper') && parent.classList.contains('collapsed')) {
+        parent.classList.remove('collapsed');
+        const toggleHeader = parent.previousElementSibling;
+        if (toggleHeader && toggleHeader.classList.contains('closed')) {
+          toggleHeader.classList.remove('closed');
+        }
+      }
+      parent = parent.parentElement;
+    }
+  };
+})();
+</script>
+  <script>// mod-toc.js
+// 責務: ScrollSpy、目次クリック時の挙動制御
+(function() {
+  window.initScrollSpy = () => {
+    const headers = Array.from(document.querySelectorAll('h1[id], h2[id], h3[id]'));
+    const tocLinks = document.querySelectorAll('#TOC a');
+
+    const onScroll = () => {
+      const scrollPosition = window.scrollY + (window.innerHeight / 2);
+      let currentHeader = null;
+      for (let i = 0; i < headers.length; i++) {
+        const header = headers[i];
+        const headerTop = header.getBoundingClientRect().top + window.scrollY;
+        if (headerTop <= scrollPosition) {
+          currentHeader = header;
+        } else {
+          break;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (currentHeader && link.getAttribute('href') === '#' + currentHeader.id) {
+          link.classList.add('active');
+        }
+      });
+    };
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    onScroll();
+  };
+
+  window.initTocBehavior = () => {
+    const tocLinks = document.querySelectorAll('#TOC a');
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const targetId = link.getAttribute('href');
+        if (!targetId || !targetId.startsWith('#')) return;
+        const targetHeader = document.querySelector(targetId);
+        if (targetHeader) {
+          e.preventDefault(); 
+          // 閉じていれば開く (mod-accordion.jsの機能)
+          if (window.openRecursive) window.openRecursive(targetHeader);
+          setTimeout(() => {
+            targetHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      });
+    });
+  };
+})();
+</script>
+  <script>// mod-breadcrumb.js
+// 責務: 現在のヘッダー階層を解析し、タイトル下にパンくずを表示する
+(function() {
+  // パンくずコンテナの作成
+  const createBreadcrumbContainer = () => {
+    const headerBlock = document.getElementById('title-block-header');
+    if (!headerBlock) return null;
+    
+    const container = document.createElement('div');
+    container.id = 'breadcrumb';
+    // タイトルの直下に追加
+    headerBlock.appendChild(container);
+    return container;
+  };
+
+  // DOMツリーを遡って親ヘッダーを見つける関数
+  const getParentHeader = (element) => {
+    // 現在の要素の親ラッパーを探す
+    const wrapper = element.closest('.accordion-wrapper');
+    if (wrapper && wrapper.previousElementSibling) {
+      // ラッパーの直前にある要素が親ヘッダー（H1など）のはず
+      const parentHeader = wrapper.previousElementSibling;
+      if (parentHeader.tagName.match(/^H[1-6]$/)) {
+        return parentHeader;
+      }
+    }
+    return null;
+  };
+
+  // 階層パスの構築
+  const buildPath = (currentHeader) => {
+    const path = [];
+    let curr = currentHeader;
+    while (curr) {
+      path.unshift({
+        text: curr.textContent.replace('▼', '').trim(), // トグルアイコンを除去
+        element: curr
+      });
+      curr = getParentHeader(curr);
+    }
+    return path;
+  };
+
+  // パンくずの描画
+  const renderBreadcrumb = (container, path) => {
+    container.innerHTML = '';
+    if (path.length === 0) {
+      container.classList.remove('visible');
+      return;
+    }
+
+    path.forEach((item, index) => {
+      // 区切り文字
+      if (index > 0) {
+        const sep = document.createElement('span');
+        sep.className = 'separator';
+        sep.textContent = '>';
+        container.appendChild(sep);
+      }
+
+      // リンク部分
+      const span = document.createElement('span');
+      span.textContent = item.text;
+      span.addEventListener('click', (e) => {
+        e.stopPropagation(); // ヘッダー自体のクリックイベント（トップへ戻る）を阻止
+        
+        // 閉じていたら開く (mod-accordion.js連携)
+        if (window.openRecursive) window.openRecursive(item.element);
+        
+        // スムーススクロール
+        setTimeout(() => {
+          const offset = 100; // Sticky Headerの分だけ少し下にずらす
+          const top = item.element.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }, 50);
+      });
+      container.appendChild(span);
+    });
+    
+    container.classList.add('visible');
+  };
+
+  // Scroll Spyの初期化
+  window.initBreadcrumbSpy = () => {
+    const container = createBreadcrumbContainer();
+    if (!container) return;
+
+    const headers = Array.from(document.querySelectorAll('h1, h2, h3'));
+    
+    const onScroll = () => {
+      // 画面上部から少し下の位置で判定
+      const scrollPosition = window.scrollY + 120; 
+      let currentHeader = null;
+
+      // 現在位置より上にある最後のヘッダーを探す
+      for (let i = 0; i < headers.length; i++) {
+        const header = headers[i];
+        const headerTop = header.getBoundingClientRect().top + window.scrollY;
+        if (headerTop <= scrollPosition) {
+          currentHeader = header;
+        } else {
+          // これ以上下のヘッダーは見なくていい
+          // break; // DOM順と位置順が一致しないケースも稀にあるので全走査が無難だが、今回はDOM順=表示順と仮定
+        }
+      }
+
+      if (currentHeader) {
+        const path = buildPath(currentHeader);
+        renderBreadcrumb(container, path);
+      } else {
+        container.classList.remove('visible');
+      }
+    };
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    onScroll(); // 初回実行
+  };
+})();
+</script>
+  <script>// mod-fold-controls.js
+// 責務: "Unfold All" / "Fold All" ボタンの生成と制御
+(function() {
+  window.initFoldControls = () => {
+    const header = document.getElementById('title-block-header');
+    if (!header) return;
+
+    // 1. コントロール用コンテナを作成
+    const controls = document.createElement('div');
+    controls.className = 'header-controls';
+
+    // 2. Unfold All ボタン (すべて展開)
+    const btnUnfold = document.createElement('button');
+    btnUnfold.className = 'control-btn';
+    btnUnfold.textContent = 'Unfold All';
+    btnUnfold.onclick = (e) => {
+      e.stopPropagation(); // ヘッダー自体のトップへ戻るクリックを阻止
+      
+      // すべてのラッパーから collapsed を除去
+      document.querySelectorAll('.accordion-wrapper.collapsed').forEach(el => {
+        el.classList.remove('collapsed');
+      });
+      // すべてのヘッダーから closed を除去（アイコンを回転させるため）
+      document.querySelectorAll('h1.closed, h2.closed, h3.closed').forEach(el => {
+        el.classList.remove('closed');
+      });
+    };
+
+    // 3. Fold All ボタン (すべてたたむ)
+    const btnFold = document.createElement('button');
+    btnFold.className = 'control-btn';
+    btnFold.textContent = 'Fold All';
+    btnFold.onclick = (e) => {
+      e.stopPropagation();
+
+      // すべてのラッパーに collapsed を付与
+      document.querySelectorAll('.accordion-wrapper').forEach(el => {
+        el.classList.add('collapsed');
+      });
+      // すべてのヘッダーに closed を付与
+      document.querySelectorAll('h1, h2, h3').forEach(el => {
+        // トグルアイコンを持っているものだけ対象にするのが安全
+        if (el.querySelector('.toggle-icon')) {
+          el.classList.add('closed');
+        }
+      });
+    };
+
+    // DOMに追加
+    controls.appendChild(btnUnfold);
+    controls.appendChild(btnFold);
+    header.appendChild(controls);
+  };
+})();
+</script>
+  <script>// mod-link-preview.js
+(function() {
+  let previewPane = null;
+  let timer = null;
+  // マウス座標を保持する変数
+  let mouseX = 0;
+  let mouseY = 0;
+
+  const createPreviewPane = () => {
+    const pane = document.createElement('div');
+    pane.id = 'link-preview-pane';
+    
+    pane.innerHTML = `
+      <div class="preview-title" id="lp-title"></div>
+      <span class="preview-url" id="lp-url"></span>
+      <div class="preview-frame-wrapper">
+        <iframe class="preview-frame" id="lp-frame" src="about:blank"></iframe>
+      </div>
+    `;
+    document.body.appendChild(pane);
+    return pane;
+  };
+
+  // 画面からはみ出さないように位置を計算する関数
+  const updatePosition = (pane) => {
+    const offset = 20; // カーソルからの距離
+    const paneWidth = 440; // CSSのwidth + padding等
+    const paneHeight = 350; // 概算高さ
+
+    let left = mouseX + offset;
+    let top = mouseY + offset;
+
+    // 画面右端からはみ出るなら、カーソルの左側に表示
+    if (left + paneWidth > window.innerWidth) {
+      left = mouseX - paneWidth - offset;
+    }
+
+    // 画面下端からはみ出るなら、カーソルの上側に表示
+    if (top + paneHeight > window.innerHeight) {
+      top = mouseY - paneHeight - offset;
+    }
+
+    pane.style.left = `${left}px`;
+    pane.style.top = `${top}px`;
+  };
+
+  window.initLinkPreview = () => {
+    // 幅制限 (必要に応じて数値を変えるか、制限を外してください)
+    if (window.innerWidth < 1300) return;
+
+    previewPane = createPreviewPane();
+    const lpTitle = document.getElementById('lp-title');
+    const lpUrl = document.getElementById('lp-url');
+    const lpFrame = document.getElementById('lp-frame');
+
+    const links = document.querySelectorAll('p a, li a, td a'); 
+
+    // マウスの動きを常に追跡するのはコストが高いので、リンク上のみで更新するイベントリスナー
+    const trackMouse = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        // 初期位置取得
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // ホバー中のマウス移動を追跡
+        link.addEventListener('mousemove', trackMouse);
+
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          lpTitle.textContent = link.textContent || "Link Preview";
+          lpUrl.textContent = href;
+          lpFrame.src = href;
+
+          // 表示直前に位置を決定
+          updatePosition(previewPane);
+          previewPane.classList.add('visible');
+        }, 300); 
+      });
+
+      link.addEventListener('mouseleave', () => {
+        // 追跡解除
+        link.removeEventListener('mousemove', trackMouse);
+        
+        clearTimeout(timer);
+        previewPane.classList.remove('visible');
+        setTimeout(() => {
+          if (!previewPane.classList.contains('visible')) {
+            lpFrame.src = 'about:blank';
+          }
+        }, 300);
+      });
+    });
+  };
+})();
+</script>
+  <script>// main.js
+// 責務: 全体の初期化実行
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. セクションのラップ (H2 -> H1 の順)
+  if (window.wrapSection) {
+    window.wrapSection(2); 
+    window.wrapSection(1); 
+  }
+
+  // 2. TOCリンクの挙動設定
+  if (window.initTocBehavior) window.initTocBehavior();
+
+  // 3. スクロールスパイ開始
+  if (window.initScrollSpy) window.initScrollSpy();
+
+  // 4. パンくずリスト開始（新規追加）
+  if (window.initBreadcrumbSpy) window.initBreadcrumbSpy();
+
+  // 5. 一括開閉ボタン (新規追加)
+  if (window.initFoldControls) window.initFoldControls();
+
+  // 6. リンクプレビュー (PCのみ有効)
+  if (window.initLinkPreview) window.initLinkPreview();
+
+
+
+
+
+
+
+});
+</script>
+
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">LINKEY のペルソナ再考</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#ペルソナと価値提案を見直す" id="toc-ペルソナと価値提案を見直す">ペルソナと価値提案を見直す</a></li>
+<li><a href="#対象とするセグメント" id="toc-対象とするセグメント">対象とするセグメント</a>
+<ul>
+<li><a href="#セグメンテーションについて" id="toc-セグメンテーションについて">セグメンテーションについて</a></li>
+<li><a href="#it-リテラシー別" id="toc-it-リテラシー別">IT リテラシー別</a>
+<ul>
+<li><a href="#このセグメンテーションについて" id="toc-このセグメンテーションについて">このセグメンテーションについて</a></li>
+<li><a href="#it-強者" id="toc-it-強者">IT 強者</a></li>
+<li><a href="#it-弱者" id="toc-it-弱者">IT 弱者</a></li>
+</ul></li>
+<li><a href="#民泊事業者のセグメント-小分類" id="toc-民泊事業者のセグメント-小分類">民泊事業者のセグメント (小分類)</a>
+<ul>
+<li><a href="#物件の種類ごと" id="toc-物件の種類ごと">物件の種類ごと</a></li>
+<li><a href="#その他の切り分け方" id="toc-その他の切り分け方">その他の切り分け方</a></li>
+</ul></li>
+<li><a href="#ホテル事業者のセグメント-小分類" id="toc-ホテル事業者のセグメント-小分類">ホテル事業者のセグメント (小分類)</a></li>
+</ul></li>
+<li><a href="#ペルソナの考え方の復習" id="toc-ペルソナの考え方の復習">ペルソナの考え方の復習</a>
+<ul>
+<li><a href="#five-rings-of-buyer-insight" id="toc-five-rings-of-buyer-insight">Five Rings of Buyer Insight</a></li>
+</ul></li>
+<li><a href="#価値提案の作り方の復習" id="toc-価値提案の作り方の復習">価値提案の作り方の復習</a></li>
+<li><a href="#ペルソナ考案の参考にすべきインプット" id="toc-ペルソナ考案の参考にすべきインプット">ペルソナ考案の参考にすべきインプット</a>
+<ul>
+<li><a href="#事例インタビュー" id="toc-事例インタビュー">事例インタビュー</a></li>
+<li><a href="#展示会" id="toc-展示会">展示会</a></li>
+<li><a href="#isfs-からの-fb" id="toc-isfs-からの-fb">IS・FS からの FB</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="ペルソナと価値提案を見直す">ペルソナと価値提案を見直す</h1>
+<p>LP 作成時など、過去に何回かペルソナを作成してきた。</p>
+<p>現在、興味関心層向けのマーケティング・コミュニケーションの実装が求められている。<br>このタイミングで、一度見直しを行いたい。</p>
+<p>以下の理由から、過去作ったものは Stale (古臭い) になっている。</p>
+<ol type="1">
+<li>市場は常に変化を続ける</li>
+<li>我々の顧客に対する、新しい発見や洞察が溜まってきた</li>
+</ol>
+<h1 id="対象とするセグメント">対象とするセグメント</h1>
+<p>ペルソナと価値提案は、<strong>1 つの顧客セグメントに対して 1 つ</strong>作る。</p>
+<p>LINKEY の対象となる市場は広範。<br>市場を構成するすべての業界・産業を対象にペルソナ仮説や価値提案を作る時間はない。</p>
+<p>以下の 2 つの顧客セグメントを、さらに細分化する。</p>
+<p><strong>顧客セグメント (中分類)</strong></p>
+<ol type="1">
+<li>民泊事業者</li>
+<li>ホテル事業者</li>
+</ol>
+<p>上記のうち、2. のセグメントは情報が不足しているので<strong>後回し</strong>。<br>一旦民泊セグメントの細分化を考えていく。</p>
+<p>その中で、優先的にターゲティングしていくべきものを識別したい。</p>
+<h2 id="セグメンテーションについて">セグメンテーションについて</h2>
+<p>共通のニーズや課題感で市場を分割する。<br>行動パターンでも。</p>
+<h2 id="it-リテラシー別">IT リテラシー別</h2>
+<p>1 度目の意見交換 (2026.1.8 Thu) を踏まえて。<br>松島さんから共有のあった、やどまね亀岡さまとの打ち合わせで得られた洞察や、<br>昨今のリード対応状況などから。</p>
+<ol type="1">
+<li>IT 強者</li>
+<li>IT 弱者</li>
+</ol>
+<h3 id="このセグメンテーションについて">このセグメンテーションについて</h3>
+<p>新しい民泊がポコポコ立つ時代は終わりを迎えつつある。<br>大阪での特区民泊申請も打ち切り。<br>人気の観光地では飽和状態。<br>新規参入の障壁が高まりつつある。</p>
+<p>今後は、<strong>弱者と強者の２極化</strong>が加速していくものと思われる。<br>強者は IT に強く、DX を効果的に取り入れ省力化して効率運営する一部の業者。<br>弱者は、それができずに手が回らず運営コストの回収ができずに事業継続を断念する多くの参入組。</p>
+<p>脱落していく弱者の物件を強者が吸収。培ったノウハウで横展開。<br>強き者がさらに強く、弱き者はどんどん淘汰されていくという。</p>
+<h3 id="it-強者">IT 強者</h3>
+<p>民泊の運営に、IT ツールや DX 技術を積極的に導入。<br>最小限の運営コストで、多くの施設を同時展開。</p>
+<h4 id="性質">性質</h4>
+<h5 id="宿泊業の専門家">宿泊業の専門家</h5>
+<p>宿泊業界に長い。<br>元々ホテルチェーンで働いていたり、小型の宿の運営の経験が長い。<br>もしくは、設計や宿泊システムなど、関連領域で長く活動した後に鞍替えのパターンも。</p>
+<p>運営以外にも、集客や集金など、事業を成功させるために必要な領域すべてに強い。<br>自社施設の直営以外にも、そのノウハウを活かして他の宿泊事業主の施設運営を受託したり、コンサルテーションを提供することも。</p>
+<h5 id="it-や業務効率化サービスに精通">IT や業務効率化サービスに精通</h5>
+<p>事業を効率化するための IT ツール、技術、サービスにも精通している。<br>どんなものなのか、どういう選択肢があるのか、どのように活用するのか、などについて。<br>どういった仕組みなのか、にもある程度明るい。</p>
+<h5 id="必要な設備投資に積極的">必要な設備投資に積極的</h5>
+<p>成功するために、ある程度まとまった額の設備投資をすることを厭わない。</p>
+<h5 id="複数の施設を運営">複数の施設を運営</h5>
+<p>同じ屋号・ブランドで複数の施設を運営する。<br>同一・近隣エリアで固めるケースもあれば、飛び地の場合もある。</p>
+<h5 id="小さな組織を構築">小さな組織を構築</h5>
+<p>スモールチームで宿泊事業に取り組んでいる。<br>通常、すべての領域に精通したリーダー格の代表のような人物がいる。<br>ほぼワンマン。<br>その取り巻きに、腕の良い専門家たちのパートナー網がある。設計士や法律、税金関係の士業の人など。<br>ゲスト対応や清掃業者とのやりとり、という日々のオペを担当する人も。</p>
+<h5 id="代表がバイヤー">代表がバイヤー</h5>
+<p>ツールやサービスの新規導入に際し、情報収集から導入までは代表格の人物が担当する。<br>業界を取り巻く様々なサービスやツールに精通していることが “武器” と考えるため。<br>その後の運用からは別の担当に引き継ぐ。</p>
+<h4 id="ゴールニーズ">ゴール、ニーズ</h4>
+<ul>
+<li>より手広く事業を拡大したい</li>
+<li>儲かる拠点数を増やしたい</li>
+<li>より効率の高い運用を目指したい。特に、鍵まわりの無人・効率化を徹底したい</li>
+<li>施設を軌道に乗せて手離れし、次の物件取得や企画、組織拡大に注力したい</li>
+</ul>
+<h4 id="ペイン課題">ペイン、課題</h4>
+<ul>
+<li>スマートロックを色々試しているが、コレといった正解にたどり着けない</li>
+<li>様々なソリューションがあり、それらの違いや、どれが自分のやりたいことに最適かわからない</li>
+<li>運用上のカギトラブルの対処方法の正解がわからない</li>
+<li>自分らのビジネスを理解し、導入から運用・定着まで支援してくれる会社が少なく困っている</li>
+</ul>
+<h4 id="ジャーニー">ジャーニー</h4>
+<h5 id="初期接点">初期接点</h5>
+<p>情報収集を常に積極的に行っているので (in-market) 、マーケティングメッセージに触れる。</p>
+<ul>
+<li>宿泊業界関連のニュースやメディア (に出てくるバナー広告)</li>
+<li>商材比較サイト</li>
+<li>SNS のフィード</li>
+<li>Web や AI 検索 (“宿泊 鍵管理”、“民泊 スマートロック” など)、</li>
+<li>同僚・業界仲間からの口コミ</li>
+<li>展示会</li>
+</ul>
+<p>などの多様なチャネルから。</p>
+<h5 id="自分が探しているものとマッチしているかを確認">自分が探しているものとマッチしているかを確認</h5>
+<p>スマートロックは実際にいくつか試してみたことさえある。<br>ただし、最適解にまだ到達していないので、常に情報は求めている。</p>
+<p>この商材は、何ができる、何が手に入るのかを知りたい。<br>スマートロックがどうとか、PMS と連携云々、という基本的なことは既に知っている。<br>このフェーズでは、<strong>自分が探しているものと合っているか</strong> (まったく的外れではない) 、の確認ができれば良い。<br>詳しい説明は不要。</p>
+<h5 id="他とどう違うのかを知りたい">他とどう違うのかを知りたい</h5>
+<p>他にも様々ある鍵まわりの選択肢の中で、この商材が他とどう違うのか。<br>とりわけ、<strong>自分が現在採用している鍵管理方法</strong> (物理カギ、他社製 SL) と比較してどう違う、どうベターなのか。</p>
+<p>忙しいので、自分で包括的な市場調査はもちろん行わない。<br>代わりにやってくれ、わかりやすくまとめられたた WP などは大変ありがたい。</p>
+<p>また、実際に試している他の事業者の事例を確認することで、疑似体験をしたい。</p>
+<h5 id="とはいえ忙しいので検討は先送る">とはいえ、忙しいので検討は先送る</h5>
+<p>運営している施設も複数で、チームも管理している立場。<br>心労の源は多い。緊急対応が必要な案件も少なくない。<br>なので、<strong>まとまった時間が取れるまで</strong>は、新しいツールやサービスの導入は見送る。</p>
+<p>時間が生まれた際にスムーズに導入できるよう、<strong>導入全体の流れ</strong>や<strong>必要な運用準備</strong>の情報は予め知っておきたい。<br><strong>必要なコスト</strong>も。</p>
+<h5 id="新しい案件のタイミングで-poc">新しい案件のタイミングで PoC</h5>
+<p>他の案件が落ち着いて、まとまった時間が取れるタイミングが生まれる。<br>もしくは、新規施設の開業で、ちょうど新しいツールやサービスを試験的に導入するタイミングが。</p>
+<p>効率化に磨きをかけるため、<strong>業務の改善に結びつく商材のトライアル</strong>には積極的。<br>入れたいと思ったらすぐに入れたい。</p>
+<p>提案依頼から導入まで、流れ全体を簡単に説明してもらいたい。<br>そして、スムーズに導入の手続きを導いてほしい。</p>
+<h5 id="導入後の支援が欲しい">導入後の支援が欲しい</h5>
+<p>新しい物件に導入して運用する。<br>うまくいく点もあれば、逆にいかない点も生まれてくる。<br>運用に際し、気をつけるべき点や回避方法など、<strong>運用サポート</strong>の情報を求める。</p>
+<p>よくあるトラブルとその回避方法など。<strong>他社ではどのようにうまく回しているのか</strong>を知りたい。</p>
+<p>ゲスト向けの説明用のペラや張り紙など、<strong>運用をサポートするツール</strong>なんかも手に入ると嬉しい。</p>
+<h5 id="気に入ったサービスは贔屓にしたい">気に入ったサービスは贔屓にしたい</h5>
+<p>同業者や、コンサル先の施設に、<strong>自分が使って良いと思った商材・サービス</strong>は積極的に紹介したい。<br>紹介することで自分にもメリットがあると嬉しい。<br>紹介制度や代理店、ロイヤリティ・プログラムがあると良いと思う。</p>
+<h3 id="it-弱者">IT 弱者</h3>
+<h4 id="性質-1">性質</h4>
+<h5 id="宿泊業の経験が浅い">宿泊業の経験が浅い</h5>
+<p>宿泊事業の経験はなく、初めてチャレンジ。<br>不動産取引や賃貸オーナー等の経験はあるかも。</p>
+<h5 id="儲けたいという気持ちから">儲けたいという気持ちから</h5>
+<p>遊休不動産の利活用や、本業の傍らの隙間時間で。<br>空き物件をマネタイズする、もしくは新しい事業を始めてみようと、最近話題の民泊に参入。<br>自分の手が回る範囲内でできる限り運用してみようと始める。</p>
+<h5 id="個人でスモールスタート">個人でスモールスタート</h5>
+<p>いずれは事業として組織で運営することも視野に入れている。<br>が、一旦起動に乗るまでは独力でと、当面は個人で取り組んでいる。</p>
+<h5 id="できる限り投資額は抑えたい">できる限り投資額は抑えたい</h5>
+<p>試験的な取り組みなので、あまり初期投資はかけたくない。</p>
+<h5 id="事業を支える-to-b-サービスに詳しくない">事業を支える to B サービスに詳しくない</h5>
+<p>IT や DX にも詳しくない。<br>知人がやっているのを教えてもらうくらい。<br>どこで情報収集したらいいかが分からない。</p>
+<h5 id="独自色や差別化ができない">独自色や差別化ができない</h5>
+<p>こんな宿をやりたい、あったらいいな、泊まってみたい、という想いがない。<br>コンセプトもない。<br>結果、エリアと価格で競争することに。</p>
+<h5 id="想定外に苦戦">想定外に苦戦</h5>
+<p>詳しい知り合いに聞いたり、セミナー受講したり本を読んで始めてみる。<br>しかし、ガッツリ回すとなると、思った以上に手がかかることが判明。</p>
+<p>試算通りの客がつかない。<br>想定していなかったトラブルや問題が頻発する。</p>
+<h4 id="ゴールニーズ-1">ゴール、ニーズ</h4>
+<ul>
+<li>手間がかかって仕方がないので、なんとかしたい</li>
+<li>まずは 1 施設目を軌道に乗せたい</li>
+<li>成功している他の事業者のやりかたを知りたい</li>
+<li>上手くいかなければ早めの損切り (撤退) したい</li>
+</ul>
+<h4 id="ペイン課題-1">ペイン、課題</h4>
+<ul>
+<li>始めてみたが、思ったより手間がかかり困っている</li>
+<li>想定以上に楽に儲からない</li>
+<li>開業 ~ 運営の成功の秘訣が分からない</li>
+<li>本業もあるので、そんなに時間や労力を割くことができない</li>
+<li>試験的な取り組みなので、大きなコストを PoC に割くことができない</li>
+</ul>
+<h4 id="ジャーニー-1">ジャーニー</h4>
+<p>Work in progress</p>
+<h2 id="民泊事業者のセグメント-小分類">民泊事業者のセグメント (小分類)</h2>
+<p>例えば、民泊事業者の中でもいつくかのセグメントに分けることは可能。<br>それぞれが我々にとって等価ではない。</p>
+<p>以下がセグメント分けのアイデア。</p>
+<h3 id="物件の種類ごと">物件の種類ごと</h3>
+<h4 id="リゾート型一棟貸し">リゾート型一棟貸し</h4>
+<p><strong>遠隔無人でやるパターン</strong>が多い。<br>繁華街ではなく、自然豊かなエリアや、観光向けの伝統的な町並みなどに。<br>コンセプト系・リゾート系の民泊で、グループ宿泊向けに宿泊単価を高く設定。<br><strong>専業でやってるケースが少ない</strong>ように思える。副業や多角事業の一角など。<br>デザインにこだわるので、ドアはまるごと交換 (or スクラッチで作成) する。<br>施工条件が<strong>ネックになりにくい</strong>。</p>
+<h4 id="市街地の空き家一棟貸し">市街地の空き家一棟貸し</h4>
+<p>上記のリゾート型と違い、<strong>住宅地</strong>に物件がある。<br>築古物件。内外装ともに、<strong>最低限のリフォーム</strong>で転用。<br>宿泊単価は低めに設定している。<br>そのため、予算が厳しく、<strong>ハイエンドスマートロック</strong>に手が出ない。<br>物件は<strong>賃貸している</strong>可能性高い ?<br>ドアは既存のものを流用するケースが多く、施工条件でミスマッチ起こる可能性大。<br>さらに、スタッフが<strong>駆け付けできる距離にいること</strong>が多い。<br>なので、遠隔管理のニーズが希薄。</p>
+<h4 id="アパマン型民泊">アパマン型民泊</h4>
+<p>集合住宅向けの物件の空き部屋を民泊として転用。<br>物件は賃貸されるケースが多い。<br>築古のアパートの場合は一棟丸々改装する。<br>マンションの場合は、既存の設備・建具・外装を維持。<br>賃貸として稼働している物件の場合、一気に全室ではなく、<strong>空き部屋から順次転用</strong>。<br>宿泊単価は低めに設定 ? 特にアパート。<br>既存のドアを流用するため、<strong>取り付けができないケースが多発</strong>。</p>
+<h4 id="ホテル型民泊">ホテル型民泊</h4>
+<p>無人のビジネスホテル、シティホテルとの<strong>垣根があいまい</strong>。<br>客室数が多いので<strong>大きな客単価</strong>が見込める。<br>ただし、既存のホテル錠があったり既存のドアを流用希望ケースが多かったり<strong>施工条件がネック</strong>になりがち？<br><strong>法人事業者。</strong>個人事業でやるケースはほとんどない。</p>
+<h3 id="その他の切り分け方">その他の切り分け方</h3>
+<h4 id="開業準備中">開業準備中</h4>
+<p>民泊の開業に向けて準備している人たち。<br>既に運営している人たちに比べ、<strong>ドアの設計・手配段階から</strong>検討が始まる。<br>取り付けができない、というケースが少なくなる。オペレーションも固まっていないケースも多い。<br>ので、<strong>LINKEY と連携しているシステムの案内</strong>も可能かも。</p>
+<h4 id="競合スマートロックからリプレイス">競合スマートロックからリプレイス</h4>
+<p>既に民泊を運営して月日が経過している。<br>他社製のスマートロックで運用。</p>
+<h4 id="有人対応">有人対応</h4>
+<p>物理鍵やキーボックスで運用。<br>有人対応で<strong>なんとかなってしまっている</strong>。<br>手広く事業を拡げていこう、という<strong>意識が希薄</strong>。<br>空き時間でできるかぎり、というメンタリティ。<br>このセグメントは厳密には <strong>out-market</strong>。相手にしない方が得策。</p>
+<h4 id="事業拡大主義">事業拡大主義</h4>
+<p>の民泊事業者でないと、理想的な顧客になりにくい。</p>
+<h4 id="section"></h4>
+<h2 id="ホテル事業者のセグメント-小分類">ホテル事業者のセグメント (小分類)</h2>
+<p>Work in progress。<br><strong>情報がなく</strong>、まだよくわからないセグメント。</p>
+<h1 id="ペルソナの考え方の復習">ペルソナの考え方の復習</h1>
+<h2 id="five-rings-of-buyer-insight">Five Rings of Buyer Insight</h2>
+<ol type="1">
+<li><p>Priority Initiative</p>
+<p>優先施策。<br>購買の旅路をスタートするタイミングで、バイヤーが優先していること。<br>他を差し置いてでも、なぜ今 LINKEY の購買検討を開始するのか。</p></li>
+<li><p>Success Factor</p>
+<p>成功要因。<br>LINKEY を導入することで、何が達成されたら顧客視点で<strong>成功</strong>となるのか。<br>達成 / 未達を判断するメトリックはあるか。</p></li>
+<li><p>Perceived Barrier</p>
+<p>バイヤーが考えている障壁。<br>事実と違って思い込みのことも含める。<br>導入、購買、運用、定着の流れのどこに、どんな障壁があると思っているのか。</p></li>
+<li><p>Buyer’s Journey</p>
+<p>バイヤージャーニー。<br>1st Touch から定着までの旅路において、誰からどんな影響・サポート・情報を受け取るのか。<br>現状と理想を明確にして、その<strong>ギャップを埋める</strong>のがマーケの仕事。</p></li>
+<li><p>Decision Criteria</p>
+<p>最終決定の判断基準。<br>候補商材の中から、1 社を最終的に選択する。<br>その判断の基準は ? 複数あると思うが、その中でも特に重要なものは何 ?</p></li>
+</ol>
+<h1 id="価値提案の作り方の復習">価値提案の作り方の復習</h1>
+<p>価値提案とは、以下のパーツを識別して、</p>
+<ul>
+<li>Business Imperative</li>
+<li>Business Initiative</li>
+<li>Benefit</li>
+<li>Play / Offer</li>
+</ul>
+<p>以下のテンプレを穴埋めして整形した短文になる。</p>
+<blockquote>
+<p>[Imperative] に直面しているあなたの組織が、<br>それを解決するための [Initiative] を講じる上で、<br>[Benefit] という価値のある、<br>[Play / Offer] を我々は提供します。</p>
+</blockquote>
+<h1 id="ペルソナ考案の参考にすべきインプット">ペルソナ考案の参考にすべきインプット</h1>
+<p>我々の体験からくる一次情報や直感を大事にしたい。</p>
+<ul>
+<li>事例インタビュー</li>
+<li>展示会</li>
+<li>IS・FS からの FB</li>
+</ul>
+<h2 id="事例インタビュー">事例インタビュー</h2>
+<p>Nicoh Takakura 井上・東さま<br>TOC 武山さま<br>TCR 長田さま<br>Chatbox<br>Three days 中川さま</p>
+<h2 id="展示会">展示会</h2>
+<p>民泊旅館フェス</p>
+<h2 id="isfs-からの-fb">IS・FS からの FB</h2>
+<p>対応してきたリードや検討・商談顧客とのやりとりから。</p>
+</body>
+</html>
