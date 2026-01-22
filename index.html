@@ -33,7 +33,7 @@ body {
 font-family: Roboto, "Noto Sans JP", Helvetica, Arial, sans-serif;
 color: #202124;
 line-height: 1.6;
-font-size: 14px;
+font-size: 13px;
 
 max-width: 720px;
 margin: 0 auto; 
@@ -739,14 +739,6 @@ nav#TOC { width: 100%; height: auto; max-height: 200px; border-right: none; bord
 header#title-block-header, section.level1 { width: 95% !important; max-width: 95% !important; padding: 1.5em 1em !important; }
 }
 </style>
-  <script>
-  window.DOC_META = {
-    focusTitle: "更新箇所",
-    lastModified: "2026-01-21 14:46",
-    debugMode: true
-  };
-  console.log("[VimInject] DOC_META ready:", window.DOC_META);
-  </script>
   <script>// mod-sticky-header.js
 // 責務: ヘッダークリック時のトップへ戻る動作
 document.addEventListener("DOMContentLoaded", function() {
@@ -1343,123 +1335,144 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (sections.length === 0) return;
 
-    // --- Helper: URLエンコードされた日本語IDをデコードする ---
+    // --- Helper: URLエンコード対応 ---
     const safeDecode = (str) => {
-      try {
-        return decodeURIComponent(str);
-      } catch (e) {
-        return str;
-      }
+      try { return decodeURIComponent(str); } catch (e) { return str; }
     };
 
-    // --- 2. タブ切り替えロジック ---
-    const switchTab = (targetId) => {
-      if (!targetId) return;
+    // --- Helper: ターゲット要素を柔軟に探す (PandocのID生成ルール対策) ---
+    const findTargetElement = (rawHref) => {
+      if (!rawHref || !rawHref.startsWith('#')) return null;
+      
+      const rawId = rawHref.slice(1);
+      const decodedId = safeDecode(rawId);
 
-      // ★修正: デコードして日本語IDに戻す
-      const decodedId = safeDecode(targetId);
-      const cleanId = decodedId.replace(/^#/, '');
+      // 1. 完全一致 (デコード済み)
+      let el = document.getElementById(decodedId);
+      if (el) return el;
+
+      // 2. 完全一致 (生のID)
+      el = document.getElementById(rawId);
+      if (el) return el;
+
+      // 3. 記号除去マッチ (Pandocは「・」やスペースをIDから削除するため)
+      // 例: href="#メモ・備忘録" -> id="メモ備忘録" を探す
+      const looseId = decodedId.replace(/[\s\u3000\u30FB\.\,\:\;\!\?]/g, '');
+      el = document.getElementById(looseId);
+      if (el) return el;
+
+      return null;
+    };
+
+    // --- 2. タブ切り替えコアロジック ---
+    // targetEl を直接受け取るように変更
+    const switchTabToElement = (targetEl) => {
+      if (!targetEl) return;
+      
+      const parentSection = targetEl.closest('section.level1');
+      if (!parentSection) return;
+
+      const sectionId = parentSection.id;
       
       const currentActive = document.querySelector('section.level1.active-section');
-      if (currentActive && currentActive.id === cleanId) return;
+      if (currentActive && currentActive.id === sectionId) return;
 
       sections.forEach(sec => sec.classList.remove('active-section'));
-      
-      // ★修正: querySelectorではなくgetElementByIdを使う (記号対策)
-      const targetSec = document.getElementById(cleanId);
-      
-      if (targetSec) {
-        targetSec.classList.add('active-section');
-        mainWrapper.scrollTop = 0;
-      }
+      parentSection.classList.add('active-section');
+      mainWrapper.scrollTop = 0;
 
       // TOCのアクティブ更新
       document.querySelectorAll('#TOC > ul > li').forEach(li => li.classList.remove('active-tab'));
-      tocLinksH1.forEach(link => {
-        // リンク側のhrefもデコードして比較
-        const linkHref = safeDecode(link.getAttribute('href')).replace(/^#/, '');
-        if (linkHref === cleanId) {
-          link.parentElement.classList.add('active-tab');
-        }
-      });
       
-      // 履歴更新 (エンコードされたままでOK)
-      history.replaceState(null, null, targetId);
+      // TOCリンクとセクションIDの照合
+      // (IDが記号除去されている可能性を考慮して、href属性ではなくターゲットIDで照合)
+      const activeLink = document.querySelector(`#TOC > ul > li > a[href="#${sectionId}"]`) 
+                      || document.querySelector(`#TOC > ul > li > a[href="#${encodeURIComponent(sectionId)}"]`);
+      
+      if (activeLink) {
+        activeLink.parentElement.classList.add('active-tab');
+      }
     };
 
-    // --- 3. イベントリスナー設定 ---
-    
-    // H1リンク
-    tocLinksH1.forEach(link => {
-      link.addEventListener('click', (e) => {
+    // --- 3. 共通ジャンプ処理 ---
+    const handleInternalLink = (e, link) => {
+      const rawHref = link.getAttribute('href');
+      // ターゲット要素を特定
+      const targetEl = findTargetElement(rawHref);
+
+      if (targetEl) {
         e.preventDefault();
-        switchTab(link.getAttribute('href'));
-      });
+
+        // A. タブ切り替え
+        switchTabToElement(targetEl);
+
+        // B. アコーディオン展開
+        if (window.openRecursive) window.openRecursive(targetEl);
+
+        // C. スクロール
+        setTimeout(() => {
+          const headerOffset = 120; 
+          const elementPosition = targetEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + mainWrapper.scrollTop - headerOffset;
+
+          mainWrapper.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }, 10);
+        
+        // URLハッシュ更新 (リンク元のhrefをそのまま使う)
+        history.pushState(null, null, rawHref);
+      }
+    };
+
+    // --- 4. イベントリスナー設定 ---
+    
+    // (A) 目次(TOC)の H1 リンク
+    // これらは確実にIDが合致しているので直接 switchTabToElement できるが、
+    // 統一して handleInternalLink を使う
+    tocLinksH1.forEach(link => {
+      link.addEventListener('click', (e) => handleInternalLink(e, link));
     });
 
-    // H2以下リンク
+    // (B) 目次(TOC)の H2以下リンク
     const subLinks = document.querySelectorAll('#TOC > ul > li > ul a');
     subLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const rawHref = link.getAttribute('href');
-        const decodedHref = safeDecode(rawHref);
-        const cleanId = decodedHref.replace(/^#/, '');
-        
-        // ★修正: getElementByIdで確実に探す
-        const targetEl = document.getElementById(cleanId);
-
-        if (targetEl) {
-          const parentSection = targetEl.closest('section.level1');
-          if (parentSection && !parentSection.classList.contains('active-section')) {
-            switchTab('#' + parentSection.id);
-          }
-
-          setTimeout(() => {
-            const headerOffset = 100;
-            const elementPosition = targetEl.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + mainWrapper.scrollTop - headerOffset;
-
-            mainWrapper.scrollTo({
-              top: offsetPosition,
-              behavior: "smooth"
-            });
-          }, 10);
-          
-          history.pushState(null, null, rawHref);
-        }
-      });
+      link.addEventListener('click', (e) => handleInternalLink(e, link));
     });
 
-    // --- 4. パンくずリスト再初期化 ---
+    // (C) 本文中のすべての内部リンク
+    const contentLinks = mainWrapper.querySelectorAll('a[href^="#"]');
+    contentLinks.forEach(link => {
+      link.addEventListener('click', (e) => handleInternalLink(e, link));
+    });
+
+    // --- 5. パンくずリスト再初期化 ---
     if (window.initBreadcrumbSpy) {
       window.initBreadcrumbSpy();
     }
 
-    // --- 5. 初期表示 (ここがエラーの原因だった箇所) ---
+    // --- 6. 初期表示 (ハッシュがある場合) ---
     const hash = window.location.hash;
     let initialTabOpened = false;
     
     if (hash) {
-      // ★修正: ハッシュをデコードしてID化
-      const decodedHash = safeDecode(hash);
-      const cleanHashId = decodedHash.replace(/^#/, '');
-      
-      // getElementById なら記号が含まれていてもエラーにならない
-      const targetEl = document.getElementById(cleanHashId);
-      
+      const targetEl = findTargetElement(hash);
       if (targetEl) {
-        const parentSection = targetEl.closest('section.level1');
-        if (parentSection) {
-          switchTab('#' + parentSection.id);
-          setTimeout(() => targetEl.scrollIntoView(), 50);
-          initialTabOpened = true;
-        }
+        switchTabToElement(targetEl);
+        if (window.openRecursive) window.openRecursive(targetEl);
+        setTimeout(() => targetEl.scrollIntoView(), 50);
+        initialTabOpened = true;
       }
     }
     
     if (!initialTabOpened && sections.length > 0) {
-      switchTab('#' + sections[0].id);
+      // 最初のセクションをアクティブに
+      sections[0].classList.add('active-section');
+      // TOCも合わせる
+      if (tocLinksH1.length > 0) {
+        tocLinksH1[0].parentElement.classList.add('active-tab');
+      }
     }
   };
 })();
@@ -1600,18 +1613,37 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
   <script>// mod-meta-actions.js
 (function() {
+  // メインの初期化関数
   window.initMetaActions = () => {
     const log = window.appLog || console.log;
-    log("initMetaActions started.");
+    log("initMetaActions started (Hierarchy mode).");
 
-    // データ確認
-    if (!window.DOC_META) {
-      log("ERROR: window.DOC_META is undefined.");
-      return;
-    }
-    
-    const { focusTitle, lastModified } = window.DOC_META;
-    log(`Meta Data - Title: "${focusTitle}", Date: "${lastModified}"`);
+    // リトライ回数制限と待機ロジック
+    let retryCount = 0;
+    const maxRetries = 10;
+
+    const checkMeta = () => {
+      if (window.DOC_META) {
+        log("DOC_META found. Proceeding...");
+        runActions(window.DOC_META);
+      } else {
+        if (retryCount < maxRetries) {
+          retryCount++;
+          log(`DOC_META undefined. Retrying (${retryCount}/${maxRetries})...`);
+          setTimeout(checkMeta, 200);
+        } else {
+          log("ERROR: DOC_META not found after retries. Giving up.");
+        }
+      }
+    };
+
+    checkMeta();
+  };
+
+  // メタデータに基づくアクション実行関数
+  const runActions = ({ focusPath, lastModified }) => {
+    const log = window.appLog || console.log;
+    log(`Meta Data - Path: ${JSON.stringify(focusPath)}, Date: "${lastModified}"`);
 
     // --- A. 日時表示 ---
     let retryDate = 0;
@@ -1632,24 +1664,13 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }, 100);
 
-    // --- B. フォーカス処理 ---
-    if (!focusTitle) return;
+    // --- B. 階層フォーカス処理 ---
+    if (!Array.isArray(focusPath) || focusPath.length === 0) return;
 
+    // 正規化関数 (記号除去・小文字化)
     const normalize = (str) => (str || '').toLowerCase().replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '');
-    const targetKey = normalize(focusTitle);
-    
-    // 1. まずTOCから探す
-    const tocLinks = document.querySelectorAll('#TOC a');
-    let targetLink = null;
 
-    for (let link of tocLinks) {
-      if (normalize(link.textContent).includes(targetKey)) {
-        targetLink = link;
-        break;
-      }
-    }
-
-    // 共通のハイライト関数
+    // ハイライト演出関数
     const flashElement = (el) => {
       if (!el) return;
       const originalBg = el.style.backgroundColor;
@@ -1660,83 +1681,107 @@ document.addEventListener("DOMContentLoaded", function() {
       }, 1500);
     };
 
-    if (targetLink) {
-      // --- パターン1: TOCにある場合 (H1-H3) ---
-      log(`TOC Link found: ${targetLink.textContent}`);
-      
-      // 1. タブを切り替える
-      targetLink.click();
+    // --- Step 1: ルート要素 (H1 / Section Level 1) を特定 ---
+    const rootTitle = normalize(focusPath[0]);
+    let currentScope = document.body; // 探索範囲
+    let targetElement = null;
 
-      // 2. 本文の要素を探して光らせる
-      const href = targetLink.getAttribute('href'); // 例: "#セグメンテーションの背景"
-      // URLエンコードされている可能性があるのでデコード
-      let cleanId = href.replace(/^#/, '');
-      try { cleanId = decodeURIComponent(cleanId); } catch(e){}
-      
-      setTimeout(() => {
-        // TOCをスクロール
-        targetLink.scrollIntoView({ block: 'center' });
+    // H1 (TOC連携) の特定
+    const tocLinks = document.querySelectorAll('#TOC > ul > li > a');
+    let targetTabId = null;
 
-        // 本文要素を取得
-        const targetEl = document.getElementById(cleanId);
-        if (targetEl) {
-          log("Flashing target element from TOC...");
-          // 少しスクロール位置を調整（ヘッダー被り防止）
-          const wrapper = document.getElementById('main-content-wrapper');
-          if (wrapper) {
-             const headerHeight = 150; 
-             const top = targetEl.offsetTop - headerHeight;
-             wrapper.scrollTo({ top: top, behavior: 'smooth' });
-          }
-          flashElement(targetEl);
-        } else {
-          log(`Target element not found for ID: ${cleanId}`);
-        }
-      }, 300);
-
-    } else {
-      // --- パターン2: TOCになければ本文から直接探す (H4-H6) ---
-      log("TOC miss. Searching body headers...");
-      const allHeaders = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      let directHeader = null;
-
-      for (let h of allHeaders) {
-        if (normalize(h.textContent).includes(targetKey)) {
-          directHeader = h;
-          break;
-        }
-      }
-
-      if (directHeader) {
-        log(`Body Header found: ${directHeader.tagName} - ${directHeader.textContent}`);
+    for (const link of tocLinks) {
+      if (normalize(link.textContent).includes(rootTitle)) {
+        // TOCが見つかったら、タブIDを取得
+        const href = link.getAttribute('href');
+        targetTabId = href; 
         
-        // 親のアコーディオンを開く
-        if (window.openRecursive) window.openRecursive(directHeader);
+        // タブ切り替え実行
+        link.click();
+        log(`Activated Tab: ${targetTabId}`);
+        
+        // 探索範囲をそのセクションに限定
+        const cleanId = href.replace(/^#/, '');
+        try {
+            // URLエンコードされている可能性があるのでデコード
+            const sec = document.getElementById(decodeURIComponent(cleanId));
+            if (sec) {
+                currentScope = sec;
+                targetElement = sec.querySelector('h1'); // デフォルトターゲット
+            }
+        } catch(e) {
+            log(`Error finding section: ${e.message}`);
+        }
+        break;
+      }
+    }
 
-        // 親タブを開く
-        const parentSection = directHeader.closest('section.level1');
-        if (parentSection) {
-          const tabLink = document.querySelector(`#TOC a[href="#${parentSection.id}"]`);
-          if (tabLink) {
-            tabLink.click();
-            log(`Opened parent tab: ${parentSection.id}`);
-          }
+    // --- Step 2: 階層を掘り下げる (H2, H3...) ---
+    // focusPath[1] 以降を順番に現在のスコープ内で探す
+    for (let i = 1; i < focusPath.length; i++) {
+        const targetTitle = normalize(focusPath[i]);
+        // 現在のスコープ内の全ヘッダーを探す (h2, h3, h4...)
+        const headers = currentScope.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        let found = null;
+
+        for (const h of headers) {
+            // テキストが一致するか
+            if (normalize(h.textContent).includes(targetTitle)) {
+                found = h;
+                break; // 最初に見つかったものを採用 (スコープが絞られているので安全)
+            }
         }
 
-        // スクロール & フラッシュ
+        if (found) {
+            targetElement = found;
+            log(`Found level ${i+1}: ${found.textContent}`);
+            
+            // 次の探索のためにスコープを狭める
+            // アコーディオン構造の場合、ヘッダーの直後に .accordion-wrapper があるはず
+            const nextNode = found.nextElementSibling;
+            if (nextNode && nextNode.classList.contains('accordion-wrapper')) {
+                currentScope = nextNode; // 子要素はラッパーの中にいる
+            } else {
+                // アコーディオン構造でない場合、sectionタグなどを探すことになるが
+                // Pandocの --section-divs は H1, H2 レベルでdivを切るため、
+                // 親のdivを探す処理が必要かもしれない。
+                // ただし、mod-accordion.js が効いているなら wrapper があるはず。
+            }
+        } else {
+            log(`Could not find sub-header: ${focusPath[i]} in current scope.`);
+            break; // 見つからなければ親で止まる
+        }
+    }
+
+    // --- Step 3: スクロール & 展開 & フラッシュ ---
+    if (targetElement) {
         setTimeout(() => {
-          const wrapper = document.getElementById('main-content-wrapper');
-          if (wrapper) {
-             const headerHeight = 150; 
-             const top = directHeader.offsetTop - headerHeight;
-             wrapper.scrollTo({ top: top, behavior: 'smooth' });
-             log("Scrolled to header.");
-             flashElement(directHeader);
-          }
-        }, 500);
-      } else {
-        log("FAILURE: Content not found in TOC or Body.");
-      }
+            // 親のアコーディオンをすべて開く
+            if (window.openRecursive) window.openRecursive(targetElement);
+
+            // スクロール位置計算
+            const wrapper = document.getElementById('main-content-wrapper') || window;
+            const headerHeight = 150;
+            
+            // 要素の位置へスクロール
+            // (display:none のタブ内だと計算できないが、Step1でclick()しているので表示されているはず)
+            if (targetElement.offsetParent !== null) {
+                // ラッパー内での相対位置計算
+                let top = 0;
+                if (wrapper !== window) {
+                    top = targetElement.getBoundingClientRect().top + wrapper.scrollTop - wrapper.getBoundingClientRect().top - headerHeight;
+                    wrapper.scrollTo({ top: top, behavior: 'smooth' });
+                } else {
+                    top = targetElement.getBoundingClientRect().top + window.scrollY - headerHeight;
+                    window.scrollTo({ top: top, behavior: 'smooth' });
+                }
+                
+                log("Scrolled to target.");
+                flashElement(targetElement);
+            } else {
+                log("Target is strictly hidden (tab switch failed?).");
+            }
+        }, 500); // 描画待ち
     }
   };
 })();
@@ -2103,8 +2148,30 @@ document.addEventListener("DOMContentLoaded", function() {
 <li><a href="#isfs-からの-fb" id="toc-isfs-からの-fb">IS・FS からの FB</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#メモ備忘録" id="toc-メモ備忘録">メモ・備忘録</a>
+<ul>
+<li><a href="#ラガードに焦点を当てる理由" id="toc-ラガードに焦点を当てる理由">ラガードに焦点を当てる理由</a></li>
+<li><a href="#it-に詳しくないの補足" id="toc-it-に詳しくないの補足">IT に詳しくない、の補足</a></li>
+<li><a href="#人を雇う" id="toc-人を雇う">人を雇う ?</a></li>
+<li><a href="#ジャーニーアイデアの整理" id="toc-ジャーニーアイデアの整理">ジャーニーアイデアの整理</a>
+<ul>
+<li><a href="#接触前の状態" id="toc-接触前の状態">接触前の状態</a></li>
+<li><a href="#st-contact" id="toc-st-contact">1st Contact</a></li>
+<li><a href="#検討休眠" id="toc-検討休眠">検討休眠</a></li>
+<li><a href="#購買活動の再開" id="toc-購買活動の再開">購買活動の再開</a></li>
+</ul></li>
+</ul></li>
 </ul>
 </nav>
+<script>
+  window.DOC_META = {
+    focusPath: ['このドキュメントについて', '更新箇所'], 
+    lastModified: "2026-01-22 16:51",
+    debugMode: true
+  };
+  console.log("[LuaFilter] DOC_META injected:", window.DOC_META);
+
+</script>
 <section id="このドキュメントについて" class="level1">
 <h1>このドキュメントについて</h1>
 <p>Work in progress</p>
@@ -2113,6 +2180,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <ul>
 <li>2026.01.20 各セグメントの概要。IT リテラシーがラガードとチャレンジャーで誤っていた。</li>
 <li>2026.01.21 各セグメントの顧客例や、セグメンテーションについての説明を補強。ラガードの識別方法に追記。</li>
+<li>2026.01.22 <a href="#メモ・備忘録">メモ・備忘録</a>セクションを追加。当日の WS のまとめを記載。</li>
 </ul>
 </section>
 </section>
@@ -3183,6 +3251,78 @@ document.addEventListener("DOMContentLoaded", function() {
 <section id="isfs-からの-fb" class="level3">
 <h3>IS・FS からの FB</h3>
 <p>対応してきたリードや検討・商談顧客とのやりとりから。</p>
+</section>
+</section>
+</section>
+<section id="メモ備忘録" class="level1">
+<h1>メモ・備忘録</h1>
+<p>2026.01.22 Thu ラガードジャーニー WS</p>
+<p><a href="https://docs.google.com/document/d/1UZQSnxJADbI4Lb5PQy2aNMSLPlZRgoMgHnhwazBAeQI/edit?usp=sharing">Gemini 会議メモ</a><br><a href="https://tldv.io/app/meetings/69718b9d7500600013b79818/">tl;dv</a></p>
+<section id="ラガードに焦点を当てる理由" class="level2">
+<h2>ラガードに焦点を当てる理由</h2>
+<p>現状手を打てていない興味／関心層の大部分を占める。(仮説)<br>比較的放っておいても現状購買活動をスムーズに進める他のセグメントと比較し、<br>数も多く、施策による後押しによって案件化率全体の向上効果が最も期待できるため。</p>
+</section>
+<section id="it-に詳しくないの補足" class="level2">
+<h2>IT に詳しくない、の補足</h2>
+<p>ネットとかスマホは普通に使えるレベル。<br>スマホ屋の講座を受講するような情弱レベルではない。<br>多分それだと民泊の開業まで至らないのでは。</p>
+<p>ここでいう IT に詳しくないとは、<strong>宿泊の DX を進めるために必要な知識やスキル</strong>が不足している、という意味。</p>
+</section>
+<section id="人を雇う" class="level2">
+<h2>人を雇う ?</h2>
+<p>栗原の考えでは、そこまでの投資には消極的。<br>作業の外注 (清掃業務の外部委託など) は普通にコスパが良いので行う。<br>専任のスタッフを正社員雇用、というのは考えにくい。<br>近隣のお手伝いさん、くらいか。</p>
+</section>
+<section id="ジャーニーアイデアの整理" class="level2">
+<h2>ジャーニーアイデアの整理</h2>
+<section id="接触前の状態" class="level3">
+<h3>接触前の状態</h3>
+<p>詳細説明通りの性質を持っているため、初めてみた民泊がそんなに上手くいっていない。<br>ただし、何をどうしたら良いかなど分かっておらず。半ば八方塞がり状態。<br>” こんなもんか ” と諦めかけているような状態。<br>具体的な課題の言語化ができておらず、当然解決策も見えず。</p>
+<p>手間が増えていて困っているが、人を雇えるほど利益はない。<br>新しい取り組みに着手したくとも、今の物件の運営の手間でそれどころではない。</p>
+<p>漠然と “なんとかしたい” と思って日々を過ごしている。</p>
+</section>
+<section id="st-contact" class="level3">
+<h3>1st Contact</h3>
+<p>そんな中、普通に過ごしているとマーケティングメッセージを浴びせ続けられる。<br>Web 上でも SNS でもメールでも。</p>
+<p>ふと広告が目に留まる。</p>
+<ul>
+<li>自身に関連がありそう。民泊の運営が改善するアイデアを得られそう。</li>
+<li><strong>漠然とした興味・関心</strong>が満たされそう。</li>
+<li>成功事例、失敗事例や民泊あるある。</li>
+<li>“コストカット” 等の<strong>お金</strong>や<strong>儲け話</strong>系のワードも目を引く。</li>
+<li>専門家や先人たちの意見を鵜呑みにしがち。成功している人たちはみんな使っている、という “民泊 No.1” という<strong>権威アピール</strong>も効果。</li>
+<li><strong>隙間時間でサクッと読める</strong>。仕事の合間の休憩時間などに消費したくなるような、エンタメ的で軽い気持ちで読め、脳に負荷がかからないもの。</li>
+<li>情報へのアクセスの手間がほとんどない。面倒なフォーム入力とかなさそう。</li>
+</ul>
+<p>興味本位で広告先にアクセス。暇つぶしくらいの軽い気持ちで遷移先の記事や DL 資料を眺めてみる。<br>結果、</p>
+<ul>
+<li>民泊運営がスマートロックで改善する、ということが分かる。</li>
+<li>スマートロックがそもそもどういうものなのか、が分かる。</li>
+<li>上手くいっている他の事業者が、どのように民泊を回しているのかが分かる。</li>
+<li><strong>自分と同じ状況で苦しんでいた人</strong>が、成功にいたるまでのストーリーが語られている。</li>
+<li>同様に、自分と同じ状況の人が、<strong>打つ手を間違って破滅</strong>に至った経緯なども。</li>
+</ul>
+<p>読んで見て、“なるほど” という<strong>気づき</strong>や、“ためになる” という<strong>肯定的で前向きな気持ち</strong>が生まれる。<br>“LINKEY (リンキー)” という<strong>ブランド名</strong>もこの際に認知する。</p>
+</section>
+<section id="検討休眠" class="level3">
+<h3>検討休眠</h3>
+<p>現状、ここで一旦購買活動がストップする。<br>検討休眠期間に入る。手が打てていない。</p>
+<p>バイヤーは、今具体的にどんなアクションを起こすべきなのか (What) 、そのアクションを今起こすべき理由 (Why) が分からない状態。<br>一時的に “良さそうだな” と思っても、他の優先案件の処理に注意が移ってしまう。<br>結果、経時で印象や記憶が薄れて、ブランド名とともに忘却される。</p>
+</section>
+<section id="購買活動の再開" class="level3">
+<h3>購買活動の再開</h3>
+<p>タイミングやきっかけには以下の例がある。</p>
+<ul>
+<li>鍵回りのトラブルでえらい目にあった</li>
+<li>補助金・助成金の締め切り期日が迫る</li>
+<li>もしくは給付が決定する</li>
+<li>期末で節税のために予算を消化したい</li>
+<li>など</li>
+</ul>
+<p>そして、この時に我々が目指したい状態は、</p>
+<ul>
+<li>ずっとスマートロックという<strong>商材カテゴリの概念が脳内のどこかに居座っている</strong></li>
+<li>スマートロックといえば “LINKEY” と<strong>第一想起</strong>される</li>
+<li>スマートロックを買うことになるなら “LINKEY” がいいな、と<strong>良い印象を持ち続けてもらう</strong></li>
+</ul>
 </section>
 </section>
 </section>
